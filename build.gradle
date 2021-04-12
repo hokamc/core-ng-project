@@ -21,6 +21,7 @@ def junitVersion = '5.7.1'
 def mockitoVersion = '3.7.0'
 def assertjVersion = '3.19.0'
 def mysqlVersion = '8.0.23'
+def postgresVersion = '42.1.4'
 
 project('core-ng-api') {
     apply from: file("${rootDir}/gradle/lib.gradle")
@@ -39,6 +40,7 @@ project('core-ng') {
         implementation "org.apache.kafka:kafka-clients:${kafkaVersion}@jar"
         implementation 'org.xerial.snappy:snappy-java:1.1.8.4'      // used by kafka message compression
         compileOnly "mysql:mysql-connector-java:${mysqlVersion}"
+        compileOnly "org.postgresql:postgresql:${postgresVersion}"
         testImplementation "org.junit.jupiter:junit-jupiter-api:${junitVersion}"
         testImplementation "org.mockito:mockito-junit-jupiter:${mockitoVersion}"
         testImplementation "org.assertj:assertj-core:${assertjVersion}"

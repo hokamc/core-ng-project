@@ -11,6 +11,7 @@ import core.framework.internal.resource.Pool;
 import core.framework.log.ActionLogContext;
 import core.framework.util.ASCII;
 import core.framework.util.StopWatch;
+import org.postgresql.PGProperty;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -116,6 +117,13 @@ public final class DatabaseImpl implements Database {
             // and only character_set_server=utf8mb4 will map characterEncoding to utf-8
             // here use utf-8 as default value, and support to override by jdbc url param
             if (index == -1 || url.indexOf("characterEncoding=", index + 1) == -1) properties.setProperty(PropertyKey.characterEncoding.getKeyName(), "utf-8");
+        } else if (url.startsWith("jdbc:postgresql:")) {
+            String timeoutValue = String.valueOf(timeout.toMillis());
+            properties.setProperty(PGProperty.CONNECT_TIMEOUT.getName(), timeoutValue);
+            properties.setProperty(PGProperty.SOCKET_TIMEOUT.getName(), timeoutValue);
+            properties.setProperty(PGProperty.REWRITE_BATCHED_INSERTS.getName(), "true");
+            int index = url.indexOf('?');
+            if (index == -1 || url.indexOf("useSSL=", index + 1) == -1) properties.setProperty(PGProperty.SSL.getName(), "false");
         }
         return properties;
     }
@@ -143,6 +151,8 @@ public final class DatabaseImpl implements Database {
             return createDriver("com.mysql.cj.jdbc.Driver");
         } else if (url.startsWith("jdbc:hsqldb:")) {
             return createDriver("org.hsqldb.jdbc.JDBCDriver");
+        } else if (url.startsWith("jdbc:postgresql:")) {
+            return createDriver("org.postgresql.Driver");
         } else {
             throw new Error("not supported database, url=" + url);
         }

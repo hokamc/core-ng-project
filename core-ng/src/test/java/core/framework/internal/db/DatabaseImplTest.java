@@ -229,6 +229,15 @@ class DatabaseImplTest {
         assertThat(properties)
                 .doesNotContainKeys("useSSL")
                 .containsEntry("characterEncoding", "utf-8");
+
+        properties = database.driverProperties("jdbc:postgresql://localhost/demo", null, null);
+        assertThat(properties)
+            .doesNotContainKeys("user", "password")
+            .containsEntry("ssl", "false");
+
+        properties = database.driverProperties("jdbc:mysql://localhost/demo?useSSL=true", null, null);
+        assertThat(properties)
+            .doesNotContainKeys("ssl");
     }
 
     private void insertRow(int id, String stringField, TestEnum enumField) {
